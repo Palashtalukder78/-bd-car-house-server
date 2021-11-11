@@ -20,6 +20,7 @@ async function run() {
         const database = client.db("bdCarHouse");
         const productCollection = database.collection("products");
         const orderCollection = database.collection("orders");
+        const userCollection = database.collection("users");
 
         //Find all Products from Database and render in client side( home/all-products)
         app.get('/products', async (req, res) => {
@@ -40,7 +41,12 @@ async function run() {
             const result = await orderCollection.insertOne(order)
             res.json(result);
         })
-
+        //Recive users from Client site when user will be registered
+        app.post('/users', async (req, res) => {
+            const user = req.body;
+            const result = await userCollection.insertOne(user)
+            res.json(result)
+        })
         console.log("Database connection");
     } finally {
         // await client.close();
