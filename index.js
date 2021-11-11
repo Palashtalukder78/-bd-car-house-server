@@ -35,12 +35,19 @@ async function run() {
             const result = await productCollection.findOne(query);
             res.send(result)
         })
-        //Send orders from Client side(purchase)
+        //Recieve orders from Client side(purchase)
         app.post('/orders', async (req, res) => {
             const order = req.body;
             const result = await orderCollection.insertOne(order)
             res.json(result);
         })
+        //send orders data from Database
+        app.get('/orders', async (req, res) => {
+            const orders = orderCollection.find({})
+            const result = await orders.toArray()
+            res.json(result)
+        })
+
         //Recive users from Client site when user will be registered
         app.post('/users', async (req, res) => {
             const user = req.body;
