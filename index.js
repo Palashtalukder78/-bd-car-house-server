@@ -35,6 +35,20 @@ async function run() {
             const result = await productCollection.findOne(query);
             res.send(result)
         })
+        //Recieve product from dashboard(admin-> Add product)
+        app.post('/products', async (req, res) => {
+            const product = req.body;
+            const result = await productCollection.insertOne(product)
+            console.log(result);
+            res.json(result)
+        })
+        //Delete product from database (request come from Dashboard->Manage all product)
+        app.delete('/products/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) }
+            const result = await productCollection.deleteOne(query)
+            res.json(result)
+        })
         //Recieve orders from Client side(purchase)
         app.post('/orders', async (req, res) => {
             const order = req.body;
@@ -47,6 +61,27 @@ async function run() {
             const result = await orders.toArray()
             res.json(result)
         })
+        //Status update from client side
+        app.put('/orders/:id', async (req, res) => {
+            const id = req.params.id;
+            const order = req.body;
+            const filter = { _id: ObjectId(id) };
+            const options = { upsert: true };
+            const makeShiped = {
+                $set: {
+                    status: 'Shiped'
+                },
+            };
+            const result = await orderCollection.updateOne(filter, makeShiped, options);
+            res.json(result)
+        })
+        //Delete order item from the dashboard(customer)
+        app.delete('/orders/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) }
+            const result = await orderCollection.deleteOne(query)
+            res.send(result);
+        })
 
         //Recive users from Client site when user will be registered
         app.post('/users', async (req, res) => {
@@ -54,6 +89,13 @@ async function run() {
             const result = await userCollection.insertOne(user)
             res.json(result)
         })
+        //Send user database to client side
+        app.get('/users', async (req, res) => {
+            const users = userCollection.find({})
+            const result = await users.toArray()
+            res.json(result)
+        })
+
         console.log("Database connection");
     } finally {
         // await client.close();
