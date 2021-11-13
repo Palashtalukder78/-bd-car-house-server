@@ -21,6 +21,7 @@ async function run() {
         const productCollection = database.collection("products");
         const orderCollection = database.collection("orders");
         const userCollection = database.collection("users");
+        const reviewCollection = database.collection("reviews");
 
         //Find all Products from Database and render in client side( home/all-products)
         app.get('/products', async (req, res) => {
@@ -118,7 +119,19 @@ async function run() {
             }
             res.json({ admin: isAdmin })
         })
-
+        //Recieve review from dashboard-> customer-> review
+        app.post('/reviews', async (req, res) => {
+            const review = req.body;
+            const result = await reviewCollection.insertOne(review);
+            console.log(result);
+            res.json(result)
+        })
+        //Send reviews data from server
+        app.get('/reviews', async (req, res) => {
+            const reviews = reviewCollection.find({})
+            const result = await reviews.toArray();
+            res.json(result)
+        })
         console.log("Database connection");
     } finally {
         // await client.close();
